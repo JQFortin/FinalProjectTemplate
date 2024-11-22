@@ -30,8 +30,9 @@ class DateValidator:
             
             # Check if the date is in the valid range
             if not DateValidator.is_valid_date_range(date):
-                current_date = datetime.now().strftime("%m/%d/%Y")  # Get today's date in MM/DD/YYYY format
-                return f"Invalid date range, please enter a date between 03/15/2024 and today's date ({current_date})."
+                start_date = (datetime.now() - timedelta(days=280)).strftime("%m/%d/%Y")
+                current_date = datetime.now().strftime("%m/%d/%Y")
+                return f"Invalid date range, please enter a date between {start_date} and today's date ({current_date})."
             
             return date
         except ValueError:
@@ -51,8 +52,8 @@ class DateValidator:
     
     @staticmethod
     def is_valid_date_range(date):
-        """Check if the date is within the valid date range (03/15/2024 to today)."""
-        start_date = datetime.strptime("03/15/2024", "%m/%d/%Y")
+        """Check if the date is within the valid date range (280 days before today to today)."""
+        start_date = datetime.now() - timedelta(days=280)  # Calculate start date dynamically
         current_date = datetime.now()
         
         return start_date <= date <= current_date
@@ -68,7 +69,7 @@ class DueDateCalculator:
             lmp_date (datetime): The datetime object representing the LMP.
         """
         self.lmp_date = lmp_date
-        self.start_date = datetime.strptime("03/15/2024", "%m/%d/%Y")
+        self.start_date = datetime.now() - timedelta(days=280)  # Dynamically calculate start date
         self.current_date = datetime.now()
 
     def is_valid_lmp_date(self, lmp_date_str):
