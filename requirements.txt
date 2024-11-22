@@ -10,3 +10,6 @@
 # pandas
 # flask
 # requests  
+
+
+This project will use some built-in libraries ( modules) in python, such as datetime. 

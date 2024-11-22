@@ -40,7 +40,20 @@ How did you test your code? What did you do to make sure your code was correct? 
 ## Missing Features / What's Next
 Focus on what you didn't get to do, and what you would do if you had more time, or things you would implement in the future. 
 
+(1)Besiding the last menstrual period start date, more ways to calculate the due date can be added , such as using the conception date, IVF 3/5 day transfer date, ultrasound date and weeks/days shown. 
+
+(2)We can make the app into a multiple user login system, with each registered user's info stored in the app. 
+
 ## Final Reflection
 Write at least a paragraph about your experience in this course. What did you learn? What do you need to do to learn more? Key takeaways? etc.
 
 ## References
+https://www.babycenter.com/pregnancy-due-date-calculator ( the principles of calculating due date)
+
+https://www.simplilearn.com/tutorials/python-tutorial/datetime-in-python#:~:text=In%20the%20Python%20programming%20language,a%20built%2Din%20Python%20module. ( what datetime in python is)
+
+https://www.geeksforgeeks.org/built-in-modules-in-python/ ( what are built-in modules in python)
+
+https://www.geeksforgeeks.org/python-datetime-strptime-function/ ( about the strptime function to format date in python )
+
+https://www.digitalocean.com/community/tutorials/parse-csv-files-in-python ( how to parse csv files in python)
