@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
+from typing import Union, List, Dict, Tuple, Any, NoReturn
 
 class DateValidator:
     """Class to handle date validation and parsing."""
     @staticmethod
-    def validate_date(date_str):
+    def validate_date(date_str: str) -> Union[datetime, str]:        
         """
         Validate and parse a date string.
         
@@ -14,31 +15,52 @@ class DateValidator:
             datetime: The parsed datetime object, or an error message if invalid.
         """
         try:
-            month, day, year = map(int, date_str.split("/"))
+            month, day, year = map(int, date_str.split("/"))  
+            # Tuple unpacking. split input string-type date data in the format of MM/DD/YYYY into a string tuple (based on the separator "/"), then turn each of the element in the tuple into an integer type ( no leading 0 padding) ) and assign it to the corresponding variable ( month, day, or year). 
             if month < 1 or month > 12:
                 return "Invalid month. Month must be between 01 and 12."
             if not DateValidator.is_valid_day_in_month(month, day, year):
-                return f"The date you entered is not valid: {month:02}/{day:02}/{year}. Please double-check and try again."
-            date = datetime.strptime(date_str, '%m/%d/%Y')
+                return f"The date you entered is not valid: {month:02}/{day:02}/{year}. Please double-check and try again."  # :02 ensure the 0 padding at the leading position of the month and day entry
+            date = datetime.strptime(date_str, '%m/%d/%Y')  # format date using the strftime function
             if not DateValidator.is_valid_date_range(date):
                 start_date = (datetime.now() - timedelta(days=280)).strftime("%m/%d/%Y")
                 current_date = datetime.now().strftime("%m/%d/%Y")
                 return f"Invalid date range. Please enter a date between {start_date} and today's date ({current_date})."
             return date
         except ValueError:
-            return "Invalid date format. Please use 'MM/DD/YYYY'."
+            return "Invalid date format. Please use 'MM/DD/YYYY', and only numbers 0-9."
 
     @staticmethod
-    def is_valid_day_in_month(month, day, year):
+    def is_valid_day_in_month(month: int, day: int, year: int) -> bool:
+        """
+        Check if a day is valid for a given month and year.
+
+        Parameters:
+            month (int): The month number (1-12).
+            day (int): The day number.
+            year (int): The year number.
+    
+        Returns:
+            bool: True if the day is within the valid range for the specified month and year, False otherwise.
+        """
         days_in_month = {
             1: 31, 2: 29 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 28,  
             3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
-        }
+        }  # dictionary to match days number values to month keys
         return 1 <= day <= days_in_month.get(month, 0)
 
     @staticmethod
-    def is_valid_date_range(date):
-        start_date = datetime.now() - timedelta(days=280)
+    def is_valid_date_range(date: datetime) -> bool:  #date is a datetime object
+        """
+        Check if a given date is within a valid range.
+
+        Parameters:
+            date (datetime): the date to check
+    
+        Returns:
+            bool: True if the date is within the valid range, False otherwise.
+        """
+        start_date = datetime.now() - timedelta(days=280)  # define the earliest valid start date using the timedelta class
         current_date = datetime.now()
         return start_date <= date <= current_date
 

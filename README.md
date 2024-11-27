@@ -52,8 +52,16 @@ https://www.babycenter.com/pregnancy-due-date-calculator ( the principles of cal
 
 https://www.simplilearn.com/tutorials/python-tutorial/datetime-in-python#:~:text=In%20the%20Python%20programming%20language,a%20built%2Din%20Python%20module. ( what datetime in python is)
 
+https://docs.python.org/3/library/datetime.html ( regarding datetime and timedelta)
+
 https://www.geeksforgeeks.org/built-in-modules-in-python/ ( what are built-in modules in python)
 
 https://www.geeksforgeeks.org/python-datetime-strptime-function/ ( about the strptime function to format date in python )
 
 https://www.digitalocean.com/community/tutorials/parse-csv-files-in-python ( how to parse csv files in python)
+
+https://docs.python.org/pl/3.6/library/typing.html 
+
+https://www.geeksforgeeks.org/python-map-function/#converting-the-map-object-to-a-list ( map function in python)
+
+https://www.freecodecamp.org/news/python-datetime-now-how-to-get-todays-date-and-time/
