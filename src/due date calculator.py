@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Union, List, Dict, Tuple, Any, NoReturn
+import csv
+from os.path import exists
 
 class DateValidator:
     """Class to handle date validation and parsing."""
@@ -103,9 +105,8 @@ class DueDateCalculator:
 
 
 class DueDatePredictor:
-    """Main app to interact with the user."""
     def __init__(self):
-        print("Welcome to the BabyLand - A Comprehensive Toolbox for Your Pregnancy Journey!")
+        print("Welcome to BabyLand - A Comprehensive Toolbox for Your Pregnancy Journey!")
 
     def run(self):
         """Run the application."""
@@ -134,6 +135,90 @@ class DueDatePredictor:
         # Output results
         print(f"Congratulations! You are currently {weeks} weeks and {days} days pregnant.")
         print(f"Your baby's estimated due date is: {due_date.strftime('%m/%d/%Y')}")
+
+        # Display options
+        self.display_options(weeks)
+
+    def display_options(self, current_week):
+        """Display options to the user."""
+        while True:
+            print("\nOptions:")
+            print("1: Display pregnancy milestone info corresponding to the week.")
+            print("2: Display weekly medical info corresponding to the week.")
+            print("3: Add to your pregnancy journal.")
+            print("4: Exit.")
+            choice = input("Please select an option (1-4): ")
+            if choice == "1":
+                self.display_milestone_info(current_week)
+            elif choice == "2":
+                self.display_medical_info(current_week)
+            elif choice == "3":
+                self.user_journal()
+            elif choice == "4":
+                print("Thank you for using BabyLand! Take care.")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+    def display_milestone_info(self, week):
+        """Display pregnancy milestone information for the given week."""
+        file = "milestone_medical_info.csv"
+        if not exists(file):
+            print("Data file not found.")
+            return
+
+        with open(file, mode="r") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                if int(row["Week"]) == week:
+                    print(f"Week {row['Week']}: {row['Milestone']}")
+                    return
+            print(f"No milestone info found for week {week}.")
+
+    def display_medical_info(self, week):
+        """Display weekly medical information for the given week."""
+        file = "milestone_medical_info.csv"
+        if not exists(file):
+            print("Data file not found.")
+            return
+
+        with open(file, mode="r") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                if int(row["Week"]) == week:
+                    print(f"Week {row['Week']}: {row['Medical Info']}")
+                    return
+            print(f"No medical info found for week {week}.")
+
+    def user_journal(self):
+        """Allow the user to start or update a pregnancy journal."""
+        print("\nPregnancy Journal:")
+        journal_file = "pregnancy_journal.csv"
+
+        # Check if the file exists
+        file_exists = exists(journal_file)
+
+        # Read and display existing entries
+        if file_exists:
+            print("\nCurrent journal entries:")
+            with open(journal_file, mode="r") as journal:
+                reader = csv.reader(journal)
+                for row in reader:
+                    print(f"{row[0]} - {row[1]}")
+        else:
+            print("\nNo journal entries found. Start by adding a new one!")
+
+        # Write a new entry
+        new_entry = input("\nWrite a new entry below:\n> ")
+        try:
+            with open(journal_file, mode="a", newline="") as journal:
+                writer = csv.writer(journal)
+                if not file_exists:
+                    writer.writerow(["Date", "Entry"])
+                writer.writerow([datetime.now().strftime("%m/%d/%Y"), new_entry])
+                print("Entry saved!")
+        except IOError:
+            print("Error: Unable to save the journal entry.")
 
 
 # Run the app
