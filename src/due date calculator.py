@@ -160,9 +160,10 @@ class DueDatePredictor:
             else:
                 print("Invalid choice. Please try again.")
 
+
     def display_milestone_info(self, week):
         """Display pregnancy milestone information for the given week."""
-        file = "milestone_medical_info.csv"
+        file = "FinalProjectTemplate/src/milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
@@ -177,7 +178,7 @@ class DueDatePredictor:
 
     def display_medical_info(self, week):
         """Display weekly medical information for the given week."""
-        file = "milestone_medical_info.csv"
+        file = "FinalProjectTemplate/src/milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
@@ -186,7 +187,7 @@ class DueDatePredictor:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if int(row["Week"]) == week:
-                    print(f"Week {row['Week']}: {row['Medical Info']}")
+                    print(f"Week {row['Week']}: {row['Medical_Info']}")
                     return
             print(f"No medical info found for week {week}.")
 
