@@ -3,6 +3,7 @@ from typing import Union, List, Dict, Tuple, Any, NoReturn
 import csv
 from os.path import exists
 
+
 class DateValidator:
     """Class to handle date validation and parsing."""
     @staticmethod
@@ -105,47 +106,44 @@ class DueDateCalculator:
 
 
 class DueDatePredictor:
-    USER_DATA_FILE = "user_data.csv"
-
     def __init__(self):
         print("Welcome to BabyLand - A Comprehensive Toolbox for Your Pregnancy Journey!")
 
-
     def run(self):
         """Run the application."""
-        print("Press 'Esc' at any time to exit.")
-
-        # Input LMP date with validation loop and Esc key support
+        
+        # Input LMP date with validation loop and exit option
         while True:
-            # Check if Esc is pressed
-            if keyboard.is_pressed('esc'):
-                print("\nExiting the program. Take care!")
-                return  # Gracefully exit the program
-
-            lmp_date_str = input("Please enter the first day of your last menstrual period (MM/DD/YYYY): ").strip()
-
-            # Validate input or check for exit keyword
+            lmp_date_str = input("Please enter the first day of your last menstrual period (MM/DD/YYYY), or type 'exit' to quit: ")
+            
+            if lmp_date_str.lower() == 'exit':  # Check if the user wants to exit
+                print("Thank you for using BabyLand. Goodbye!")
+                return  # Exit the program
+            
             validation_result = DateValidator.validate_date(lmp_date_str)
-            if isinstance(validation_result, datetime):  # Check if the result is a valid datetime object
+            if isinstance(validation_result, datetime):  # Valid date
                 lmp_date = validation_result
                 break
             else:
-                print(validation_result)  # Print the error message and re-prompt
-
-        # Input normal period length
-        try:
-            if keyboard.is_pressed('esc'):
-                print("\nExiting the program. Take care!")
-                return
-
-            period_length = int(input("Please enter your normal menstrual cycle length in days (default is 28): "))
-            if period_length < 20 or period_length > 40:
-                print("Invalid period length. Please enter a value between 20 and 40.")
-                return
-        except ValueError:
-            print("Invalid input. Please enter an integer value.")
-            return
-
+                print(validation_result)  # Show error message and re-prompt
+        
+        # Input normal period length with validation loop and exit option
+        while True:
+            period_length_str = input("Please enter your normal menstrual cycle length in days (default is 28), or type 'exit' to quit: ")
+            
+            if period_length_str.lower() == 'exit':  # Check if the user wants to exit
+                print("Thank you for using BabyLand. Goodbye!")
+                return  # Exit the program
+            
+            try:
+                period_length = int(period_length_str)
+                if period_length < 20 or period_length > 45:
+                    print("Invalid period length. Please enter a value between 20 and 45.")
+                else:
+                    break
+            except ValueError:
+                print("Invalid input. Please enter a valid integer value.")
+        
         # Calculate due date and pregnancy progress
         calculator = DueDateCalculator(lmp_date, period_length)
         due_date = calculator.calculate_due_date()
@@ -159,26 +157,8 @@ class DueDatePredictor:
         self.display_options(weeks)
 
 
-    def load_user_data(self, username):
-        if not exists(self.USER_DATA_FILE):
-            return None
-        with open(self.USER_DATA_FILE, mode="r") as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                if row["username"] == username:
-                    return row
-        return None
-
-    def save_user_data(self, username, lmp_date, period_length):
-        file_exists = exists(self.USER_DATA_FILE)
-        with open(self.USER_DATA_FILE, mode="a", newline="") as csv_file:
-            fieldnames = ["username", "lmp_date", "period_length"]
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-            if not file_exists:
-                writer.writeheader()
-            writer.writerow({"username": username, "lmp_date": lmp_date, "period_length": period_length})
-
     def display_options(self, current_week):
+        """Display options to the user."""
         while True:
             print("\nOptions:")
             print("1: Display pregnancy milestone info corresponding to the week.")
@@ -194,7 +174,7 @@ class DueDatePredictor:
             elif choice == "2":
                 self.display_medical_info(current_week)
             elif choice == "3":
-                self.display_journal_entries()
+                self.display_journal_entires()
             elif choice == "4":
                 self.add_journal_entry()
             elif choice == "5":
@@ -207,11 +187,14 @@ class DueDatePredictor:
             else:
                 print("Invalid choice. Please try again.")
 
+
     def display_milestone_info(self, week):
+        """Display pregnancy milestone information for the given week."""
         file = "milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
+
         with open(file, mode="r") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
@@ -221,10 +204,12 @@ class DueDatePredictor:
             print(f"No milestone info found for week {week}.")
 
     def display_medical_info(self, week):
+        """Display weekly medical information for the given week."""
         file = "milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
+
         with open(file, mode="r") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
@@ -233,30 +218,47 @@ class DueDatePredictor:
                     return
             print(f"No medical info found for week {week}.")
 
-    def display_journal_entries(self):
+
+    def display_journal_entires(self):
+        """Display current journal entries."""
         journal_file = "pregnancy_journal.csv"
+
         if not exists(journal_file):
             print("\nNo journal entries found.")
             return
+
         print("\nCurrent journal entries:")
         with open(journal_file, mode="r") as journal:
             reader = csv.reader(journal)
             entries = list(reader)
+
+        # If there are no entries or only the header exists
         if len(entries) <= 1:
             print("\nNo journal entries found.")
         else:
-            for idx, row in enumerate(entries[1:], start=1):
+            for idx, row in enumerate(entries[1:], start=1):  # Skip the header row
                 print(f"{idx}. {row[0]} - {row[1]}")
 
+
     def add_journal_entry(self):
+        """Allow the user to start or update a pregnancy journal."""
+        print("\nPregnancy Journal:")
         journal_file = "pregnancy_journal.csv"
+
+        # Check if the file exists
         file_exists = exists(journal_file)
+
+        # Read and display existing entries
         if file_exists:
             print("\nCurrent journal entries:")
             with open(journal_file, mode="r") as journal:
                 reader = csv.reader(journal)
                 for row in reader:
                     print(f"{row[0]} - {row[1]}")
+        else:
+            print("\nNo journal entries found. Start by adding a new one!")
+
+        # Write a new entry
         new_entry = input("\nWrite a new entry below:\n> ")
         try:
             with open(journal_file, mode="a", newline="") as journal:
@@ -269,19 +271,26 @@ class DueDatePredictor:
             print("Error: Unable to save the journal entry.")
 
     def modify_journal_entry(self):
+        """Modify an existing journal entry."""
         journal_file = "pregnancy_journal.csv"
+
         if not exists(journal_file):
             print("\nNo journal entries found.")
             return
+
+        # Display current entries
         with open(journal_file, mode="r") as journal:
             reader = csv.reader(journal)
             entries = list(reader)
+
         if len(entries) <= 1:
             print("\nNo journal entries found.")
             return
+
         print("\nCurrent journal entries:")
         for idx, row in enumerate(entries[1:], start=1):
             print(f"{idx}. {row[0]} - {row[1]}")
+
         try:
             entry_num = int(input("\nEnter the number of the entry you want to modify: "))
             if 1 <= entry_num < len(entries):
@@ -297,31 +306,46 @@ class DueDatePredictor:
             print("Invalid input. Please enter a number.")
 
     def delete_journal_entry(self):
+        """Allow the user to delete a journal entry by number."""
         journal_file = "pregnancy_journal.csv"
+        
         if not exists(journal_file):
             print("\nNo journal entries found.")
             return
+
+        # Read all entries
         with open(journal_file, mode="r") as journal:
             reader = csv.reader(journal)
             entries = list(reader)
+
+        # If there are no entries or only the header exists
         if len(entries) <= 1:
             print("\nNo journal entries found.")
             return
+
+        # Display current journal entries with numbers
         print("\nCurrent journal entries:")
-        for idx, row in enumerate(entries[1:], start=1):
+        for idx, row in enumerate(entries[1:], start=1):  # Skip the header row
             print(f"{idx}. {row[0]} - {row[1]}")
+
+        # Prompt the user to enter the journal entry number to delete
         try:
             entry_to_delete = int(input("\nEnter the number of the journal entry you want to delete: "))
-            if entry_to_delete < 1 or entry_to_delete >= len(entries):
-                print("Invalid number.")
+            if entry_to_delete < 1 or entry_to_delete >= len(entries):  # Check if the entry exists
+                print("Error: Invalid entry number. Please try again.")
                 return
-            del entries[entry_to_delete]
-            with open(journal_file, mode="w", newline="") as journal:
-                writer = csv.writer(journal)
-                writer.writerows(entries)
-            print("Journal entry deleted successfully!")
-        except (IOError, ValueError):
-            print("Error occurred or invalid option!")
+        except ValueError:
+            print("Error: Invalid input. Please enter a valid number.")
+            return
+
+        # Delete the selected journal entry
+        del entries[entry_to_delete]  # Delete the entry at the specified index
+
+        # Write the updated entries back to the file
+        with open(journal_file, mode="w", newline="") as journal:
+            writer = csv.writer(journal)
+            writer.writerows(entries)
+            print(f"Entry number {entry_to_delete} has been deleted.")
 
 
 # Run the app
