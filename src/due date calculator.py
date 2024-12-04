@@ -274,7 +274,11 @@ class DueDatePredictor:
             print("\nNo journal entries found. Start by adding a new one!")
 
         # Write a new entry
-        new_entry = input("\nWrite a new entry below:\n> ")
+        new_entry = input("\nWrite a new entry below (or type 'exit' to cancel):\n> ")
+        if new_entry.lower() == 'exit':
+            print("Entry creation canceled.")
+            return  # Exit the method
+
         try:
             with open(journal_file, mode="a", newline="") as journal:
                 writer = csv.writer(journal)
@@ -303,23 +307,41 @@ class DueDatePredictor:
             print("\nNo journal entries found.")
             return
 
+        # Filter entries for the current user
+        user_entries = [row for row in entries[1:] if row[0] == self.user.name]  # Exclude header row
+
+        if not user_entries:
+            print("\nNo journal entries found for your profile.")
+            return
+
         print("\nCurrent journal entries:")
-        for idx, row in enumerate(entries[1:], start=1):
-            print(f"{idx}. {row[0]} - {row[1]}")
+        for idx, row in enumerate(user_entries, start=1):
+            print(f"{idx}. {row[1]} - {row[2]}")  # Assuming columns: Name, Date, Entry
 
         try:
-            entry_num = int(input("\nEnter the number of the entry you want to modify: "))
-            if 1 <= entry_num < len(entries):
-                new_text = input("Enter the new text for the entry:\n> ")
-                entries[entry_num][1] = new_text
+            entry_num = input("\nEnter the number of the entry you want to modify (or type 'exit' to cancel): ")
+            if entry_num.lower() == 'exit':
+                print("Modification canceled.")
+                return  # Exit the method
+            
+            entry_num = int(entry_num)
+            if 1 <= entry_num <= len(user_entries):
+                new_text = input("Enter the new text for the entry (or type 'exit' to cancel):\n> ")
+                if new_text.lower() == 'exit':
+                    print("Modification canceled.")
+                    return  # Exit the method
+                
+                user_entries[entry_num - 1][2] = new_text  # Update the entry text
+                # Write the modified entries back to the file
                 with open(journal_file, mode="w", newline="") as journal:
                     writer = csv.writer(journal)
-                    writer.writerows(entries)
+                    writer.writerows(entries)  # Re-write the entire file
                 print("Entry updated!")
             else:
                 print("Invalid entry number.")
         except ValueError:
             print("Invalid input. Please enter a number.")
+
 
     def delete_journal_entry(self):
         """Allow the user to delete a journal entry by number."""
@@ -339,15 +361,27 @@ class DueDatePredictor:
             print("\nNo journal entries found.")
             return
 
+        # Filter entries for the current user
+        user_entries = [row for row in entries[1:] if row[0] == self.user.name]  # Exclude header row
+
+        if not user_entries:
+            print("\nNo journal entries found for your profile.")
+            return
+
         # Display current journal entries with numbers
         print("\nCurrent journal entries:")
-        for idx, row in enumerate(entries[1:], start=1):  # Skip the header row
-            print(f"{idx}. {row[0]} - {row[1]}")
+        for idx, row in enumerate(user_entries, start=1):
+            print(f"{idx}. {row[1]} - {row[2]}")  # Assuming columns: Name, Date, Entry
 
         # Prompt the user to enter the journal entry number to delete
         try:
-            entry_to_delete = int(input("\nEnter the number of the journal entry you want to delete: "))
-            if entry_to_delete < 1 or entry_to_delete >= len(entries):  # Check if the entry exists
+            entry_to_delete = input("\nEnter the number of the journal entry you want to delete (or type 'exit' to cancel): ")
+            if entry_to_delete.lower() == 'exit':
+                print("Deletion canceled.")
+                return  # Exit the method
+
+            entry_to_delete = int(entry_to_delete)
+            if entry_to_delete < 1 or entry_to_delete > len(user_entries):  # Check if the entry exists
                 print("Error: Invalid entry number. Please try again.")
                 return
         except ValueError:
@@ -355,13 +389,14 @@ class DueDatePredictor:
             return
 
         # Delete the selected journal entry
-        del entries[entry_to_delete]  # Delete the entry at the specified index
+        entry_to_delete = user_entries[entry_to_delete - 1]
+        entries.remove(entry_to_delete)
 
         # Write the updated entries back to the file
         with open(journal_file, mode="w", newline="") as journal:
             writer = csv.writer(journal)
             writer.writerows(entries)
-            print(f"Entry number {entry_to_delete} has been deleted.")
+            print(f"Entry {entry_to_delete[1]} has been deleted.")  # Print the date of the deleted entry
 
 
 # Run the app
