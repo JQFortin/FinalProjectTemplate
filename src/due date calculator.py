@@ -17,7 +17,7 @@ class User:
     def set_period_length(self, period_length: int):
         self.period_length = period_length
 
-    def save_to_file(self, file_name="user_data.csv"):
+    def save_to_file(self, file_name="data/user_data.csv"):
         """Save user data to a CSV file."""
         file_exists = exists(file_name)
         try:
@@ -30,7 +30,7 @@ class User:
             print("Error: Unable to save user data.")
 
     @staticmethod
-    def load_from_file(user_name: str, file_name="user_data.csv"):
+    def load_from_file(user_name: str, file_name="data/user_data.csv"):
         """Load user data from a CSV file if it exists."""
         if not exists(file_name):
             return None
@@ -105,11 +105,12 @@ class DueDatePredictor:
         print("Welcome to BabyLand - A Comprehensive Toolbox for Your Pregnancy Journey!")
         user_name = input("Please enter your name: ").strip()
         self.user = User.load_from_file(user_name)
-        if not self.user:
+        self.is_new_user = self.user is None  # Flag to determine if user is new
+        if self.is_new_user:
             print("No previous data found. Let's set up your profile.")
             self.user = User(name=user_name)
 
-    def run(self):
+    def run(self):  # Move the `run` method outside of `__init__`
         if not self.user.lmp_date:
             self.collect_user_data()
 
@@ -117,10 +118,16 @@ class DueDatePredictor:
         due_date = calculator.calculate_due_date()
         weeks, days = calculator.calculate_current_progress()
 
-        print(f"\nWelcome back, {self.user.name}!")
+        # Use the is_new_user flag to determine the message
+        if self.is_new_user:
+            print(f"\nWelcome, {self.user.name}!")
+        else:
+            print(f"\nWelcome back, {self.user.name}!")
+        
         print(f"You are currently {weeks} weeks and {days} days pregnant.")
         print(f"Your baby's estimated due date is: {due_date.strftime('%m/%d/%Y')}")
         self.display_options(weeks)
+
 
     def collect_user_data(self):
         while True:
@@ -171,7 +178,7 @@ class DueDatePredictor:
             elif choice == "2":
                 self.display_medical_info(current_week)
             elif choice == "3":
-                self.display_journal_entires()
+                self.display_journal_entries()
             elif choice == "4":
                 self.add_journal_entry()
             elif choice == "5":
@@ -187,7 +194,7 @@ class DueDatePredictor:
 
     def display_milestone_info(self, week):
         """Display pregnancy milestone information for the given week."""
-        file = "milestone_medical_info.csv"
+        file = "data/milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
@@ -202,7 +209,7 @@ class DueDatePredictor:
 
     def display_medical_info(self, week):
         """Display weekly medical information for the given week."""
-        file = "milestone_medical_info.csv"
+        file = "data/milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
@@ -216,31 +223,42 @@ class DueDatePredictor:
             print(f"No medical info found for week {week}.")
 
 
-    def display_journal_entires(self):
-        """Display current journal entries."""
-        journal_file = "pregnancy_journal.csv"
+    def display_journal_entries(self):
+        """Display current journal entries specific to the logged-in user."""
+        journal_file = "data/pregnancy_journal.csv"
 
         if not exists(journal_file):
             print("\nNo journal entries found.")
             return
 
-        print("\nCurrent journal entries:")
-        with open(journal_file, mode="r") as journal:
-            reader = csv.reader(journal)
-            entries = list(reader)
+        print(f"\nJournal entries for {self.user.name}:")
+        try:
+            with open(journal_file, mode="r") as journal:
+                reader = csv.DictReader(journal)
+                
+                # Check if "Name" column exists in the header
+                if "Name" not in reader.fieldnames:
+                    print("Error: The journal file is missing the 'Name' column in its header.")
+                    return
 
-        # If there are no entries or only the header exists
-        if len(entries) <= 1:
-            print("\nNo journal entries found.")
-        else:
-            for idx, row in enumerate(entries[1:], start=1):  # Skip the header row
-                print(f"{idx}. {row[0]} - {row[1]}")
+                entries = [row for row in reader if row["Name"] == self.user.name]
+
+            # If there are no entries for the current user
+            if not entries:
+                print("\nNo journal entries found for your profile.")
+            else:
+                for idx, row in enumerate(entries, start=1):
+                    print(f"{idx}. {row['Date']} - {row['Entry']}")
+        except IOError:
+            print("Error: Unable to read the journal file.")
+        except KeyError as e:
+            print(f"Error: Missing expected column in the file: {e}")
 
 
     def add_journal_entry(self):
         """Allow the user to start or update a pregnancy journal."""
         print("\nPregnancy Journal:")
-        journal_file = "pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"
 
         # Check if the file exists
         file_exists = exists(journal_file)
@@ -261,15 +279,16 @@ class DueDatePredictor:
             with open(journal_file, mode="a", newline="") as journal:
                 writer = csv.writer(journal)
                 if not file_exists:
-                    writer.writerow(["Date", "Entry"])
-                writer.writerow([datetime.now().strftime("%m/%d/%Y"), new_entry])
+                    writer.writerow(["Name", "Date", "Entry"])
+                writer.writerow([self.user.name, datetime.now().strftime("%m/%d/%Y"), new_entry])
                 print("Entry saved!")
         except IOError:
             print("Error: Unable to save the journal entry.")
 
+
     def modify_journal_entry(self):
         """Modify an existing journal entry."""
-        journal_file = "pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"
 
         if not exists(journal_file):
             print("\nNo journal entries found.")
@@ -304,7 +323,7 @@ class DueDatePredictor:
 
     def delete_journal_entry(self):
         """Allow the user to delete a journal entry by number."""
-        journal_file = "pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"
         
         if not exists(journal_file):
             print("\nNo journal entries found.")
