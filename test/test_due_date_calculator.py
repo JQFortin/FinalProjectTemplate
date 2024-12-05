@@ -1,6 +1,10 @@
 import unittest
 import sys
 import os
+import pandas as pd
+import os
+print("Current working directory:", os.getcwd())
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
@@ -72,6 +76,8 @@ class TestDueDateCalculator(unittest.TestCase):
         self.lmp_date = datetime(2024, 1, 1)
         self.default_period_length = 28
         self.calculator = DueDateCalculator(self.lmp_date, self.default_period_length)
+        self.milestones_df = pd.read_csv('/Users/cindywang/Documents/NEU-Align MSCS/CS5001/Final Project/FinalProjectTemplate/data/milestone_medical_info.csv')
+
 
     def test_calculate_due_date(self):
         expected_due_date = self.lmp_date + timedelta(days=280)
@@ -124,6 +130,54 @@ class TestDueDateCalculator(unittest.TestCase):
         calculator_upper = DueDateCalculator(self.lmp_date, 45)
         self.assertEqual(calculator_lower.period_length, 20)
         self.assertEqual(calculator_upper.period_length, 45)
+
+
+class TestPregnancyInfo(unittest.TestCase):
+    def setUp(self):
+        # Load the test data using pandas
+        self.milestones_df = pd.read_csv('milestone_medical_info.csv')
+        self.medical_info_df = pd.read_csv('milestone_medical_info.csv')
+    
+    def get_pregnancy_milestone_info(self, week):
+        # Find the milestone for the given week
+        milestone_row = self.milestones_df[self.milestones_df['Week'] == week]
+        if not milestone_row.empty:
+            return milestone_row.iloc[0]['Milestone']
+        return "No milestone found for this week."
+    
+    def get_weekly_medical_info(self, week):
+        # Find the medical info for the given week
+        medical_row = self.medical_info_df[self.medical_info_df['Week'] == week]
+        if not medical_row.empty:
+            return medical_row.iloc[0]['Medical_Info']
+        return "No medical information found for this week."
+
+    def test_get_pregnancy_milestone_info(self):
+        # Test for week 1
+        result = self.get_pregnancy_milestone_info(1)
+        self.assertEqual(result, "Your baby is now a tiny collection of cells.")
+
+        # Test for week 2
+        result = self.get_pregnancy_milestone_info(2)
+        self.assertEqual(result, "The embryo begins to form.")
+
+        # Test for an invalid week (week 5)
+        result = self.get_pregnancy_milestone_info(5)
+        self.assertEqual(result, "Your baby's heart starts to beat.Your baby is now the size of a seame seed.")
+    
+    def test_get_weekly_medical_info(self):
+        # Test for week 1
+        result = self.get_weekly_medical_info(1)
+        self.assertEqual(result, "Schedule your first prenatal appointment.")
+        
+        # Test for week 2
+        result = self.get_weekly_medical_info(2)
+        self.assertEqual(result, "Start taking prenatal vitamins with folic acid.")
+
+        # Test for an invalid week (week 5)
+        result = self.get_weekly_medical_info(5)
+        self.assertEqual(result, "Avoid harmful substances (alcohol, smoking, etc.).")
+    
 
 if __name__ == "__main__":
     unittest.main()
