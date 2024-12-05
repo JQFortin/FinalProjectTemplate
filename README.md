@@ -25,6 +25,7 @@ We can run this program directly from terminal. Command line:
 
 python3 "/Users/cindywang/Documents/NEU-Align MSCS/CS5001/Final Project/FinalProjectTemplate/src/due_date_calculator.py" 
 
+python3 "/Users/cindywang/Documents/NEU-Align MSCS/CS5001/Final Project/FinalProjectTemplate/src/due date calculator.py" 
 
 ## Code Review
 Go over key aspects of code in this section. Both link to the file, include snippets in this report (make sure to use the [coding blocks](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code)).  Grading wise, we are looking for that you understand your code and what you did. 

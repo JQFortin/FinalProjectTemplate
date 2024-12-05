@@ -85,9 +85,12 @@ class DateValidator:
 
 class DueDateCalculator:
     """Class to calculate the due date and pregnancy progress."""
-    def __init__(self, lmp_date: datetime, period_length: int):
+    def __init__(self, lmp_date, period_length=28):
+        if not isinstance(period_length, int) or not (20 <= period_length <= 45):
+            raise ValueError("Period length must be an integer between 20 and 45 days.")
         self.lmp_date = lmp_date
         self.period_length = period_length
+        
 
     def calculate_due_date(self):
         adjusted_lmp = self.lmp_date + timedelta(days=(self.period_length - 28))
