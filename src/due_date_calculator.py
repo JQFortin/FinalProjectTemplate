@@ -1,30 +1,65 @@
 from datetime import datetime, timedelta
-from typing import Union, List, Dict, Tuple, Any, NoReturn
+from typing import Union
 import csv
 from os.path import exists
+
+
+class User:
+    """Class to represent a user with pregnancy-related details."""
+    def __init__(self, name: str):
+        self.name = name
+        self.lmp_date = None  # Last menstrual period date (datetime object)
+        self.period_length = 28  # Default to 28 days
+
+    def set_lmp_date(self, lmp_date: datetime):
+        self.lmp_date = lmp_date
+
+    def set_period_length(self, period_length: int):
+        self.period_length = period_length
+
+    def save_to_file(self, file_name="data/user_data.csv"):
+        """Save user data to a CSV file."""
+        file_exists = exists(file_name)
+        try:
+            with open(file_name, mode="a", newline="") as user_file:
+                writer = csv.writer(user_file)
+                if not file_exists:
+                    writer.writerow(["Name", "LMP Date", "Period Length"])
+                writer.writerow([self.name, self.lmp_date.strftime("%m/%d/%Y"), self.period_length])
+        except IOError:
+            print("Error: Unable to save user data.")
+
+    @staticmethod
+    def load_from_file(user_name: str, file_name="data/user_data.csv"):
+        """Load user data from a CSV file if it exists."""
+        if not exists(file_name):
+            return None
+
+        try:
+            with open(file_name, mode="r") as user_file:
+                reader = csv.DictReader(user_file)
+                for row in reader:
+                    if row["Name"] == user_name:
+                        user = User(name=user_name)
+                        user.set_lmp_date(datetime.strptime(row["LMP Date"], "%m/%d/%Y"))
+                        user.set_period_length(int(row["Period Length"]))
+                        return user
+        except IOError:
+            print("Error: Unable to load user data.")
+        return None
 
 
 class DateValidator:
     """Class to handle date validation and parsing."""
     @staticmethod
-    def validate_date(date_str: str) -> Union[datetime, str]:        
-        """
-        Validate and parse a date string.
-        
-        Parameters:
-            date_str (str): The date string in 'MM/DD/YYYY' format.
-            
-        Returns:
-            datetime: The parsed datetime object, or an error message if invalid.
-        """
+    def validate_date(date_str: str) -> Union[datetime, str]:
         try:
-            month, day, year = map(int, date_str.split("/"))  
-            # Tuple unpacking. split input string-type date data in the format of MM/DD/YYYY into a string tuple (based on the separator "/"), then turn each of the element in the tuple into an integer type ( no leading 0 padding) ) and assign it to the corresponding variable ( month, day, or year). 
+            month, day, year = map(int, date_str.split("/"))
             if month < 1 or month > 12:
                 return "Invalid month. Month must be between 01 and 12."
             if not DateValidator.is_valid_day_in_month(month, day, year):
-                return f"The date you entered is not valid: {month:02}/{day:02}/{year}. Please double-check and try again."  # :02 ensure the 0 padding at the leading position of the month and day entry
-            date = datetime.strptime(date_str, '%m/%d/%Y')  # format date using the strftime function
+                return f"The date you entered is not valid: {month:02}/{day:02}/{year}. Please double-check and try again."
+            date = datetime.strptime(date_str, '%m/%d/%Y')
             if not DateValidator.is_valid_date_range(date):
                 start_date = (datetime.now() - timedelta(days=280)).strftime("%m/%d/%Y")
                 current_date = datetime.now().strftime("%m/%d/%Y")
@@ -35,70 +70,30 @@ class DateValidator:
 
     @staticmethod
     def is_valid_day_in_month(month: int, day: int, year: int) -> bool:
-        """
-        Check if a day is valid for a given month and year.
-
-        Parameters:
-            month (int): The month number (1-12).
-            day (int): The day number.
-            year (int): The year number.
-    
-        Returns:
-            bool: True if the day is within the valid range for the specified month and year, False otherwise.
-        """
         days_in_month = {
-            1: 31, 2: 29 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 28,  
+            1: 31, 2: 29 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 28,
             3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
-        }  # dictionary to match days number values to month keys
+        }
         return 1 <= day <= days_in_month.get(month, 0)
 
     @staticmethod
-    def is_valid_date_range(date: datetime) -> bool:  #date is a datetime object
-        """
-        Check if a given date is within a valid range.
-
-        Parameters:
-            date (datetime): the date to check
-    
-        Returns:
-            bool: True if the date is within the valid range, False otherwise.
-        """
-        start_date = datetime.now() - timedelta(days=280)  # define the earliest valid start date using the timedelta class
+    def is_valid_date_range(date: datetime) -> bool:
+        start_date = datetime.now() - timedelta(days=280)
         current_date = datetime.now()
         return start_date <= date <= current_date
 
 
 class DueDateCalculator:
     """Class to calculate the due date and pregnancy progress."""
-    def __init__(self, lmp_date, period_length=28):
-        """
-        Initialize the calculator with LMP date and period length.
-
-        Parameters:
-            lmp_date (datetime): Last menstrual period date.
-            period_length (int): Normal menstrual cycle length in days.
-        """
+    def __init__(self, lmp_date: datetime, period_length: int):
         self.lmp_date = lmp_date
         self.period_length = period_length
 
     def calculate_due_date(self):
-        """
-        Calculate the due date.
-
-        Returns:
-            datetime: The estimated due date.
-        """
-        # Adjust LMP date based on period length difference from 28 days
         adjusted_lmp = self.lmp_date + timedelta(days=(self.period_length - 28))
         return adjusted_lmp + timedelta(days=280)
 
     def calculate_current_progress(self):
-        """
-        Calculate the current pregnancy progress in weeks and days.
-        
-        Returns:
-            tuple: (weeks, days)
-        """
         total_days_pregnant = (datetime.now() - self.lmp_date).days
         weeks = total_days_pregnant // 7
         days = total_days_pregnant % 7
@@ -108,53 +103,62 @@ class DueDateCalculator:
 class DueDatePredictor:
     def __init__(self):
         print("Welcome to BabyLand - A Comprehensive Toolbox for Your Pregnancy Journey!")
+        user_name = input("Please enter your name: ").strip()
+        self.user = User.load_from_file(user_name)
+        self.is_new_user = self.user is None  # Flag to determine if user is new
+        if self.is_new_user:
+            print("No previous data found. Let's set up your profile.")
+            self.user = User(name=user_name)
 
-    def run(self):
-        """Run the application."""
-        
-        # Input LMP date with validation loop and exit option
-        while True:
-            lmp_date_str = input("Please enter the first day of your last menstrual period (MM/DD/YYYY), or type 'exit' to quit: ")
-            
-            if lmp_date_str.lower() == 'exit':  # Check if the user wants to exit
-                print("Thank you for using BabyLand. Goodbye!")
-                return  # Exit the program
-            
-            validation_result = DateValidator.validate_date(lmp_date_str)
-            if isinstance(validation_result, datetime):  # Valid date
-                lmp_date = validation_result
-                break
-            else:
-                print(validation_result)  # Show error message and re-prompt
-        
-        # Input normal period length with validation loop and exit option
-        while True:
-            period_length_str = input("Please enter your normal menstrual cycle length in days (default is 28), or type 'exit' to quit: ")
-            
-            if period_length_str.lower() == 'exit':  # Check if the user wants to exit
-                print("Thank you for using BabyLand. Goodbye!")
-                return  # Exit the program
-            
-            try:
-                period_length = int(period_length_str)
-                if period_length < 20 or period_length > 45:
-                    print("Invalid period length. Please enter a value between 20 and 45.")
-                else:
-                    break
-            except ValueError:
-                print("Invalid input. Please enter a valid integer value.")
-        
-        # Calculate due date and pregnancy progress
-        calculator = DueDateCalculator(lmp_date, period_length)
+    def run(self):  # Move the `run` method outside of `__init__`
+        if not self.user.lmp_date:
+            self.collect_user_data()
+
+        calculator = DueDateCalculator(self.user.lmp_date, self.user.period_length)
         due_date = calculator.calculate_due_date()
         weeks, days = calculator.calculate_current_progress()
 
-        # Output results
-        print(f"Congratulations! You are currently {weeks} weeks and {days} days pregnant.")
+        # Use the is_new_user flag to determine the message
+        if self.is_new_user:
+            print(f"\nWelcome, {self.user.name}!")
+        else:
+            print(f"\nWelcome back, {self.user.name}!")
+        
+        print(f"You are currently {weeks} weeks and {days} days pregnant.")
         print(f"Your baby's estimated due date is: {due_date.strftime('%m/%d/%Y')}")
-
-        # Display options
         self.display_options(weeks)
+
+
+    def collect_user_data(self):
+        while True:
+            lmp_date_str = input("Please enter the first day of your last menstrual period (MM/DD/YYYY), or type 'exit' to quit: ")
+            if lmp_date_str.lower() == 'exit':
+                print("Thank you for using BabyLand. Goodbye!")
+                exit()
+
+            validation_result = DateValidator.validate_date(lmp_date_str)
+            if isinstance(validation_result, datetime):
+                self.user.set_lmp_date(validation_result)
+                break
+            else:
+                print(validation_result)
+
+        while True:
+            period_length_str = input("Please enter your normal menstrual cycle length in days (default is 28), or type 'exit' to quit: ")
+            if period_length_str.lower() == 'exit':
+                print("Thank you for using BabyLand. Goodbye!")
+                exit()
+
+            try:
+                period_length = int(period_length_str)
+                if 20 <= period_length <= 45:
+                    self.user.set_period_length(period_length)
+                    self.user.save_to_file()
+                    break
+                else:
+                    print("Invalid period length. Please enter a value between 20 and 45.")
+            except ValueError:
+                print("Invalid input. Please enter a valid integer value.")
 
 
     def display_options(self, current_week):
@@ -174,7 +178,7 @@ class DueDatePredictor:
             elif choice == "2":
                 self.display_medical_info(current_week)
             elif choice == "3":
-                self.display_journal_entires()
+                self.display_journal_entries()
             elif choice == "4":
                 self.add_journal_entry()
             elif choice == "5":
@@ -190,7 +194,7 @@ class DueDatePredictor:
 
     def display_milestone_info(self, week):
         """Display pregnancy milestone information for the given week."""
-        file = "milestone_medical_info.csv"
+        file = "data/milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
@@ -205,7 +209,7 @@ class DueDatePredictor:
 
     def display_medical_info(self, week):
         """Display weekly medical information for the given week."""
-        file = "milestone_medical_info.csv"
+        file = "data/milestone_medical_info.csv"
         if not exists(file):
             print("Data file not found.")
             return
@@ -219,60 +223,65 @@ class DueDatePredictor:
             print(f"No medical info found for week {week}.")
 
 
-    def display_journal_entires(self):
-        """Display current journal entries."""
-        journal_file = "pregnancy_journal.csv"
+    def display_journal_entries(self):
+        """Display current journal entries specific to the logged-in user."""
+        journal_file = "data/pregnancy_journal.csv"
 
         if not exists(journal_file):
             print("\nNo journal entries found.")
             return
 
-        print("\nCurrent journal entries:")
-        with open(journal_file, mode="r") as journal:
-            reader = csv.reader(journal)
-            entries = list(reader)
+        print(f"\nJournal entries for {self.user.name}:")
+        try:
+            with open(journal_file, mode="r") as journal:
+                reader = csv.DictReader(journal)
+                
+                # Check if "Name" column exists in the header
+                if "Name" not in reader.fieldnames:
+                    print("Error: The journal file is missing the 'Name' column in its header.")
+                    return
 
-        # If there are no entries or only the header exists
-        if len(entries) <= 1:
-            print("\nNo journal entries found.")
-        else:
-            for idx, row in enumerate(entries[1:], start=1):  # Skip the header row
-                print(f"{idx}. {row[0]} - {row[1]}")
+                entries = [row for row in reader if row["Name"] == self.user.name]
+
+            # If there are no entries for the current user
+            if not entries:
+                print("\nNo journal entries found for your profile.")
+            else:
+                for idx, row in enumerate(entries, start=1):
+                    print(f"{idx}. {row['Date']} - {row['Entry']}")
+        except IOError:
+            print("Error: Unable to read the journal file.")
+        except KeyError as e:
+            print(f"Error: Missing expected column in the file: {e}")
 
 
     def add_journal_entry(self):
         """Allow the user to start or update a pregnancy journal."""
-        print("\nPregnancy Journal:")
-        journal_file = "pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"
 
         # Check if the file exists
         file_exists = exists(journal_file)
 
-        # Read and display existing entries
-        if file_exists:
-            print("\nCurrent journal entries:")
-            with open(journal_file, mode="r") as journal:
-                reader = csv.reader(journal)
-                for row in reader:
-                    print(f"{row[0]} - {row[1]}")
-        else:
-            print("\nNo journal entries found. Start by adding a new one!")
-
         # Write a new entry
-        new_entry = input("\nWrite a new entry below:\n> ")
+        new_entry = input("\nWrite a new entry below (or type 'exit' to cancel):\n> ")
+        if new_entry.lower() == 'exit':
+            print("Entry creation canceled.")
+            return  # Exit the method
+
         try:
             with open(journal_file, mode="a", newline="") as journal:
                 writer = csv.writer(journal)
                 if not file_exists:
-                    writer.writerow(["Date", "Entry"])
-                writer.writerow([datetime.now().strftime("%m/%d/%Y"), new_entry])
+                    writer.writerow(["Name", "Date", "Entry"])
+                writer.writerow([self.user.name, datetime.now().strftime("%m/%d/%Y"), new_entry])
                 print("Entry saved!")
         except IOError:
             print("Error: Unable to save the journal entry.")
 
+
     def modify_journal_entry(self):
         """Modify an existing journal entry."""
-        journal_file = "pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"
 
         if not exists(journal_file):
             print("\nNo journal entries found.")
@@ -287,27 +296,45 @@ class DueDatePredictor:
             print("\nNo journal entries found.")
             return
 
+        # Filter entries for the current user
+        user_entries = [row for row in entries[1:] if row[0] == self.user.name]  # Exclude header row
+
+        if not user_entries:
+            print("\nNo journal entries found for your profile.")
+            return
+
         print("\nCurrent journal entries:")
-        for idx, row in enumerate(entries[1:], start=1):
-            print(f"{idx}. {row[0]} - {row[1]}")
+        for idx, row in enumerate(user_entries, start=1):
+            print(f"{idx}. {row[1]} - {row[2]}")  # Assuming columns: Name, Date, Entry
 
         try:
-            entry_num = int(input("\nEnter the number of the entry you want to modify: "))
-            if 1 <= entry_num < len(entries):
-                new_text = input("Enter the new text for the entry:\n> ")
-                entries[entry_num][1] = new_text
+            entry_num = input("\nEnter the number of the entry you want to modify (or type 'exit' to cancel): ")
+            if entry_num.lower() == 'exit':
+                print("Modification canceled.")
+                return  # Exit the method
+            
+            entry_num = int(entry_num)
+            if 1 <= entry_num <= len(user_entries):
+                new_text = input("Enter the new text for the entry (or type 'exit' to cancel):\n> ")
+                if new_text.lower() == 'exit':
+                    print("Modification canceled.")
+                    return  # Exit the method
+                
+                user_entries[entry_num - 1][2] = new_text  # Update the entry text
+                # Write the modified entries back to the file
                 with open(journal_file, mode="w", newline="") as journal:
                     writer = csv.writer(journal)
-                    writer.writerows(entries)
+                    writer.writerows(entries)  # Re-write the entire file
                 print("Entry updated!")
             else:
                 print("Invalid entry number.")
         except ValueError:
             print("Invalid input. Please enter a number.")
 
+
     def delete_journal_entry(self):
         """Allow the user to delete a journal entry by number."""
-        journal_file = "pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"
         
         if not exists(journal_file):
             print("\nNo journal entries found.")
@@ -323,15 +350,27 @@ class DueDatePredictor:
             print("\nNo journal entries found.")
             return
 
+        # Filter entries for the current user
+        user_entries = [row for row in entries[1:] if row[0] == self.user.name]  # Exclude header row
+
+        if not user_entries:
+            print("\nNo journal entries found for your profile.")
+            return
+
         # Display current journal entries with numbers
         print("\nCurrent journal entries:")
-        for idx, row in enumerate(entries[1:], start=1):  # Skip the header row
-            print(f"{idx}. {row[0]} - {row[1]}")
+        for idx, row in enumerate(user_entries, start=1):
+            print(f"{idx}. {row[1]} - {row[2]}")  # Assuming columns: Name, Date, Entry
 
         # Prompt the user to enter the journal entry number to delete
         try:
-            entry_to_delete = int(input("\nEnter the number of the journal entry you want to delete: "))
-            if entry_to_delete < 1 or entry_to_delete >= len(entries):  # Check if the entry exists
+            entry_to_delete = input("\nEnter the number of the journal entry you want to delete (or type 'exit' to cancel): ")
+            if entry_to_delete.lower() == 'exit':
+                print("Deletion canceled.")
+                return  # Exit the method
+
+            entry_to_delete = int(entry_to_delete)
+            if entry_to_delete < 1 or entry_to_delete > len(user_entries):  # Check if the entry exists
                 print("Error: Invalid entry number. Please try again.")
                 return
         except ValueError:
@@ -339,13 +378,14 @@ class DueDatePredictor:
             return
 
         # Delete the selected journal entry
-        del entries[entry_to_delete]  # Delete the entry at the specified index
+        entry_to_delete = user_entries[entry_to_delete - 1]
+        entries.remove(entry_to_delete)
 
         # Write the updated entries back to the file
         with open(journal_file, mode="w", newline="") as journal:
             writer = csv.writer(journal)
             writer.writerows(entries)
-            print(f"Entry number {entry_to_delete} has been deleted.")
+            print(f"Entry {entry_to_delete[1]} has been deleted.")  # Print the date of the deleted entry
 
 
 # Run the app
