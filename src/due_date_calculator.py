@@ -3,7 +3,6 @@ from typing import Union
 import csv
 from os.path import exists
 
-
 class User:
     """Class to represent a user with pregnancy-related details."""
     def __init__(self, name: str):
@@ -113,9 +112,13 @@ class DueDatePredictor:
             print("No previous data found. Let's set up your profile.")
             self.user = User(name=user_name)
 
-    def run(self):  # Move the `run` method outside of `__init__`
+    def run(self):
         if not self.user.lmp_date:
             self.collect_user_data()
+
+        # If the user exited during data collection, terminate the program
+        if not self.user.lmp_date:
+            return
 
         calculator = DueDateCalculator(self.user.lmp_date, self.user.period_length)
         due_date = calculator.calculate_due_date()
@@ -126,7 +129,7 @@ class DueDatePredictor:
             print(f"\nWelcome, {self.user.name}!")
         else:
             print(f"\nWelcome back, {self.user.name}!")
-        
+
         print(f"You are currently {weeks} weeks and {days} days pregnant.")
         print(f"Your baby's estimated due date is: {due_date.strftime('%m/%d/%Y')}")
         self.display_options(weeks)
@@ -137,7 +140,7 @@ class DueDatePredictor:
             lmp_date_str = input("Please enter the first day of your last menstrual period (MM/DD/YYYY), or type 'exit' to quit: ")
             if lmp_date_str.lower() == 'exit':
                 print("Thank you for using BabyLand. Goodbye!")
-                exit()
+                return  # Prevent further execution after exit
 
             validation_result = DateValidator.validate_date(lmp_date_str)
             if isinstance(validation_result, datetime):
@@ -150,7 +153,8 @@ class DueDatePredictor:
             period_length_str = input("Please enter your normal menstrual cycle length in days (default is 28), or type 'exit' to quit: ")
             if period_length_str.lower() == 'exit':
                 print("Thank you for using BabyLand. Goodbye!")
-                exit()
+                self.user.lmp_date = None  # Reset LMP date to avoid saving incomplete data
+                return  # Exit immediately without saving period length
 
             try:
                 period_length = int(period_length_str)
