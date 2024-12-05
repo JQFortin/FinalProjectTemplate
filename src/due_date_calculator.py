@@ -330,7 +330,7 @@ class DueDatePredictor:
                     writer.writerows(entries)  # Re-write the entire file
                 print("Entry updated!")
             else:
-                print("Invalid entry number.")
+                print("Invalid entry number. Please try again from the menu below.")
         except ValueError:
             print("Invalid input. Please enter a number.")
 
@@ -374,7 +374,7 @@ class DueDatePredictor:
 
             entry_to_delete = int(entry_to_delete)
             if entry_to_delete < 1 or entry_to_delete > len(user_entries):  # Check if the entry exists
-                print("Error: Invalid entry number. Please try again.")
+                print("Error: Invalid entry number. Please try again from the menu below.")
                 return
         except ValueError:
             print("Error: Invalid input. Please enter a valid number.")
