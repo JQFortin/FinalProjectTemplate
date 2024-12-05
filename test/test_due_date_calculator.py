@@ -1,11 +1,11 @@
 import unittest
-from datetime import datetime, timedelta
-from due_date_calculator import DateValidator, DueDateCalculator
 import sys
 import os
 
-# Add the parent directory of the project to the system path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
+from datetime import datetime, timedelta
+from due_date_calculator import DateValidator, DueDateCalculator
 
 class TestDateValidator(unittest.TestCase):
 
