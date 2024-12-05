@@ -15,17 +15,17 @@ class TestDateValidator(unittest.TestCase):
         self.assertIsInstance(result, datetime)
         self.assertEqual(result.strftime("%m/%d/%Y"), date_str)
 
-    def test_validate_date_invalid_format(self):
+    def test_validate_date_invalid_format_1(self):
         date_str = "2024-10-01"
         result = DateValidator.validate_date(date_str)
         self.assertEqual(result, "Invalid date format. Please use 'MM/DD/YYYY', and only numbers 0-9.")
 
-    def test_validate_date_invalid_format(self):
+    def test_validate_date_invalid_format_2(self):
         date_str = "04.24.2024"
         result = DateValidator.validate_date(date_str)
         self.assertEqual(result, "Invalid date format. Please use 'MM/DD/YYYY', and only numbers 0-9.")
 
-    def test_validate_date_invalid_format(self):
+    def test_validate_date_invalid_format_3(self):
         date_str = "ABC"
         result = DateValidator.validate_date(date_str)
         self.assertEqual(result, "Invalid date format. Please use 'MM/DD/YYYY', and only numbers 0-9.")

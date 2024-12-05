@@ -64,10 +64,22 @@ https://www.geeksforgeeks.org/built-in-modules-in-python/ ( what are built-in mo
 
 https://www.geeksforgeeks.org/python-datetime-strptime-function/ ( about the strptime function to format date in python )
 
+https://www.datacamp.com/tutorial/converting-strings-datetime-objects ( how to convert date strings to datetime objects)
+
 https://www.digitalocean.com/community/tutorials/parse-csv-files-in-python ( how to parse csv files in python)
 
 https://docs.python.org/pl/3.6/library/typing.html 
 
+https://www.tutorialsteacher.com/python/staticmethod-decorator  ( static methods in python that do not have cls or self parameter)
+
 https://www.geeksforgeeks.org/python-map-function/#converting-the-map-object-to-a-list ( map function in python)
 
 https://www.freecodecamp.org/news/python-datetime-now-how-to-get-todays-date-and-time/
+
+https://www.geeksforgeeks.org/python-check-if-a-file-or-directory-exists/ 
+
+https://www.pythontutorial.net/python-basics/python-check-if-file-exists/ ( how to check if a file exist)
+
+https://www.geeksforgeeks.org/writing-csv-files-in-python/
+
+https://docs.python.org/3/library/csv.html ( read cvs files in python)
