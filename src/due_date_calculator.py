@@ -3,13 +3,14 @@ from typing import Union
 import csv
 from os.path import exists
 
+
 class User:
     """Class to represent a user with pregnancy-related details."""
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None :
         self.name = name
         self.lmp_date = None  # Last menstrual period date (datetime object)
         self.period_length = 28  # Default to 28 days
-
+        
     def set_lmp_date(self, lmp_date: datetime):
         self.lmp_date = lmp_date
 
@@ -155,6 +156,11 @@ class DueDatePredictor:
                 print("Thank you for using BabyLand. Goodbye!")
                 self.user.lmp_date = None  # Reset LMP date to avoid saving incomplete data
                 return  # Exit immediately without saving period length
+
+            if period_length_str.strip() == "":  # If the user presses Enter without input
+                self.user.set_period_length(28)  # Use the default value
+                self.user.save_to_file()
+                break
 
             try:
                 period_length = int(period_length_str)
