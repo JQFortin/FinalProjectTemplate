@@ -1,6 +1,6 @@
 # Final Project Report
 
-* Student Name:
+* Student Name: Jianqiao Fortin
 * Github Username:
 * Semester:
 * Course:
@@ -48,7 +48,9 @@ Focus on what you didn't get to do, and what you would do if you had more time, 
 
 (1)Besiding the last menstrual period start date, more ways to calculate the due date can be added , such as using the conception date, IVF 3/5 day transfer date, ultrasound date and weeks/days shown. 
 
-(2)We can make the app into a multiple user login system, with each registered user's info stored in the app. 
+(2)We can also desgin the program to be able to handle multiple journal entries at one time, such as deleting more than one journal entries at the same time
+
+(3) It certainly can integrate with GUI to make it more like a website 
 
 ## Final Reflection
 Write at least a paragraph about your experience in this course. What did you learn? What do you need to do to learn more? Key takeaways? etc.
@@ -83,3 +85,7 @@ https://www.pythontutorial.net/python-basics/python-check-if-file-exists/ ( how 
 https://www.geeksforgeeks.org/writing-csv-files-in-python/
 
 https://docs.python.org/3/library/csv.html ( read cvs files in python)
+
+https://arcade.makecode.com/courses/csintro2/logic/booleans ( boolean flag)
+
+https://docs.python.org/3/library/csv.html ( csv.writer, csvwriter.writerow , csvwriter.writerows)
