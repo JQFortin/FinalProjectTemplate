@@ -183,7 +183,7 @@ Also I run the project to test the journal entries part. The .txt output files a
 ## Missing Features / What's Next
 Focus on what you didn't get to do, and what you would do if you had more time, or things you would implement in the future. 
 
-(1)Besiding the last menstrual period start date, more ways to calculate the due date can be added , such as using the conception date, IVF 3/5 day transfer date, ultrasound date and weeks/days shown. 
+(1)Besides the last menstrual period start date, more ways to calculate the due date can be added , such as using the conception date, IVF 3/5 day transfer date, ultrasound date and weeks/days shown. 
 
 (2)We can also desgin the program to be able to handle multiple journal entries at one time, such as deleting more than one journal entries at the same time
 
