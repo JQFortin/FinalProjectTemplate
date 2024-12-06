@@ -1,14 +1,16 @@
 # Final Project Report
 
 * Student Name: Jianqiao Fortin
-* Github Username:
-* Semester:
-* Course:
+* Github Username: JQFortin
+* Semester: 2024 Fall
+* Course: CS 5001
 
 
 
 ## Description 
 General overview of the project, what you did, why you did it, etc. 
+
+
 
 
 ## Key Features

@@ -450,7 +450,7 @@ class DueDatePredictor:
             print("Error: Unable to save the journal entry.")
 
 
-    def modify_journal_entry(self):
+    def modify_journal_entry(self) -> None:
         """
         Modify an existing journal entry.
         
@@ -513,7 +513,7 @@ class DueDatePredictor:
             print("Invalid input. Please enter a number.")
 
 
-    def delete_journal_entry(self):
+    def delete_journal_entry(self) -> None:
         """
         Allow the user to delete a journal entry by number.
         
