@@ -132,7 +132,8 @@ def add_journal_entry(self) -> None:
         except IOError:
             print("Error: Unable to save the journal entry.")
 ```
-    
+
+    Review of the above code:
     This method is for logged-in users to add new journal entries to the pregnancy journal file. 
 
     This function prompts the user to write a new journal entry. If the user types 'exit', the operation is canceled and the method exits. If the user enters a valid entry, the new journal entry is appended to the pregnancy journal file. If the journal file doesn't exist, it is created with appropriate headers for "Name", "Date", and "Entry". The entry is saved with the current date and the user's name.
