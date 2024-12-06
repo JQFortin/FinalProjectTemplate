@@ -36,6 +36,7 @@ How do we run your project? What should we do to see it in action? - Note this i
 
 We can run this program directly from terminal. 
 From my macbook, the command line is:
+
 python3 "/Users/cindywang/Documents/NEU-Align MSCS/CS5001/Final Project/FinalProjectTemplate FINAL COPY/src/due_date_calculator.py" 
 
 For other local machines, the file path needs to be modified to reflect the actual situtation. 
@@ -53,45 +54,131 @@ Go over key aspects of code in this section. Both link to the file, include snip
 
 Here is the link to the code : https://github.com/JQFortin/FinalProjectTemplate/blob/main/src/due_date_calculator.py
 
-And below is the part to be reviewed ( adding journal entry):
+All parts of the code in due_date_calculator.py include detailed docstrings and in-line comments. 
+And below is the part to be reviewed ( taking displaying jounrnal entry and adding journal entry as examples, docstrings and in-line comments are mostly removed for easier view):
+
+```python
+def display_journal_entries(self) -> None:
+    journal_file = "data/pregnancy_journal.csv"
+
+    if not exists(journal_file):
+        print("\nNo journal entries found.")
+        return
+
+    print(f"\nJournal entries for {self.user.name}:")
+    try:
+        with open(journal_file, mode="r") as journal:
+            reader = csv.DictReader(journal)
+            
+            # Check if "Name" column exists in the header
+            if "Name" not in reader.fieldnames:
+                print("Error: The journal file is missing the 'Name' column in its header.")
+                return
+
+            entries = [row for row in reader if row["Name"] == self.user.name]
+
+        # If there are no entries for the current user
+        if not entries:
+            print("\nNo journal entries found for your profile.")
+        else:
+            for idx, row in enumerate(entries, start=1):  
+                print(f"{idx}. {row['Date']} - {row['Entry']}") 
+    except IOError:
+        print("Error: Unable to read the journal file.")
+    except KeyError as e:
+        print(f"Error: Missing expected column in the file: {e}")
+```
+Review of the above code:
+
+    This method is for displaying the current journal entries for the logged-in user.
+
+    This method reads from the pregnancy journal CSV file and displays all entries related to the logged-in user. The entries are filtered by the user's name. If no entries are found for the user, a corresponding message is shown. The function also handles errors related to file access and missing columns.
+
+    Below is how this section of code would accomplish:
+    - If the journal file doesn't exist, a message is displayed and the function exits.
+    - If the journal file is missing the expected "Name" column, an error message is displayed.
+    - If no entries are found for the logged-in user, a corresponding message is displayed indicating so.
+    - If there are entries, they are displayed in a numbered list ( starting from 1), showing the date and entry content.
+
+    The variable journal_file points to the relative path "data/pregnancy_journal.csv". Ensure that this file path is correct and accessible for the function's context. If the directory or file doesn't exist, the function will handle it and print out a message.
+
+    The file is opened in read mode ("r") using csv.DictReader, which reads the file as a dictionary (row by row) with the CSV header as the keys. This allows access to columns by their names (e.g., row['Date'], row['Entry']).
+
+    If there is an error accessing or reading the journal file, an IOError will be raised; if a required column (e.g., "Name") is missing from the journal file, a KeyError will be raised. 
+
+    Also entries are displayed in a numbered list. The enumerate(entries, start=1) function is used to display entries starting from 1 (instead of the default index of 0). This is more user-friendly for display purposes. The formatting of the display (f"{idx}. {row['Date']} - {row['Entry']}") is clear and well-structured.
+
 
 ```python
 def add_journal_entry(self) -> None:
-    """Allow the user to start or update a pregnancy journal."""
-    journal_file = "data/pregnancy_journal.csv"
+        journal_file = "data/pregnancy_journal.csv"  # define the relative file path
 
-    # Check if the file exists
-    file_exists = exists(journal_file)
+        # Check if the file exists
+        file_exists = exists(journal_file)
 
-    # Write a new entry
-    new_entry = input("\nWrite a new entry below (or type 'exit' to cancel):\n> ")
-    if new_entry.lower() == 'exit':
-        print("Entry creation canceled.")
-        return  # Exit the method
+        # Write a new entry
+        new_entry = input("\nWrite a new entry below (or type 'exit' to cancel):\n> ")
+        if new_entry.lower() == 'exit':  #if input is "exit"
+            print("Entry creation canceled.")
+            return  # Exit the method
 
-    try:
-        with open(journal_file, mode="a", newline="") as journal:
-            writer = csv.writer(journal)
-            if not file_exists:
-                writer.writerow(["Name", "Date", "Entry"])
-            writer.writerow([self.user.name, datetime.now().strftime("%m/%d/%Y"), new_entry])
-            print("Entry saved!")
-    except IOError:
-        print("Error: Unable to save the journal entry.")
+        try:
+            with open(journal_file, mode="a", newline="") as journal:  
+                writer = csv.writer(journal)  
+                if not file_exists:
+                    writer.writerow(["Name", "Date", "Entry"]) 
+                writer.writerow([self.user.name, datetime.now().strftime("%m/%d/%Y"), new_entry]) 
+                print("Entry saved!")
+        except IOError:
+            print("Error: Unable to save the journal entry.")
 ```
+    
+    This method is for logged-in users to add new journal entries to the pregnancy journal file. 
+
+    This function prompts the user to write a new journal entry. If the user types 'exit', the operation is canceled and the method exits. If the user enters a valid entry, the new journal entry is appended to the pregnancy journal file. If the journal file doesn't exist, it is created with appropriate headers for "Name", "Date", and "Entry". The entry is saved with the current date and the user's name.
+
+    Below is how this section of code would accomplish:
+
+    - If the journal file doesn't exist, the function checks this and prepares to create or append to the file, ensuring the journal entries can still be saved.
+    -The user is prompted to enter a journal entry or type 'exit' to cancel the operation. If 'exit' is typed, the operation is canceled and the function exits without making changes.
+    - If the file does not exist, it writes headers ("Name", "Date", "Entry") to the file before adding the user's new entry.
+    - A new journal entry is appended to the file with the current date, the logged-in user's name, and the content provided by the user.
+    - If there is an issue accessing or writing to the journal file, an IOError is raised, and an error message is displayed.
+    
+    The variable journal_file points to the relative path "data/pregnancy_journal.csv". This file path needs to be ensured correct in order for the method to perform as intended. If there is no such file existing yet, the program will create and save it.
+
+    The function uses csv.writer to write the data to the file. In append mode (mode="a"), it allows for the journal entries to be added to the end of the file without overwriting existing data.
+
+    In the case that the file does not yet exist, it writes the header row first (writer.writerow(["Name", "Date", "Entry"])). Then, the new entry is added with the user's name, the current date (formatted as MM/DD/YYYY), and the text of the journal entry.
+
+    If there’s an issue while saving the entry, an IOError will be caught and an error message will be displayed.
+
+    Additionally, the function handles the case where the user decides not to enter an entry by typing 'exit'. This gives the user more flexibility and greater control when using this program. 
+
 
 ### Major Challenges
 Key aspects could include pieces that your struggled on and/or pieces that you are proud of and want to show off.
 
+The major challenges I entered include (1) how to handle multiple users information storage and log-in. (2) how to ensure file path is correct; (4) how to properly set up the extensive file handling, including multiple options ( 1-7) offered to the users; (5) proper use of classes and objects . 
+In general, class DueDatePredictor and its assocaited methods are the hardest part of the project. 
 
 ## Example Runs
 Explain how you documented running the project, and what we need to look for in your repository (text output from the project, small videos, links to videos on youtube of you running it, etc)
+
+I run the project in the VS code terminal, then copied the output into .txt files. Also I did screenshot for the same output ( To avoid confusion, screenshots only include the terminal output-1.txt content) . All those are placed under the "Example Runs" folder in my gitHub repo. 
+
+And below is the link for that folder:
+https://github.com/JQFortin/FinalProjectTemplate/tree/main/Example%20Runs
 
 ## Testing
 How did you test your code? What did you do to make sure your code was correct? If you wrote unit tests, you can link to them here. If you did run tests, make sure you document them as text files, and include them in your submission. 
 
 > _Make it easy for us to know you *ran the project* and *tested the project* before you submitted this report!_
 
+I did unit tests mostly for the data validation part, and the unit test link is below:
+https://github.com/JQFortin/FinalProjectTemplate/blob/main/test/test_due_date_calculator.py
+
+Also I run the project to test the journal entries part. The .txt output files and screenshots are included under folder " Example Runs". I also visually compared the info display with those on the cvs file, such as  journal entries display for the specific user, week-specific pregnancy milestones and medical info display , etc. 
 
 ## Missing Features / What's Next
 Focus on what you didn't get to do, and what you would do if you had more time, or things you would implement in the future. 
@@ -106,6 +193,11 @@ Focus on what you didn't get to do, and what you would do if you had more time, 
 
 ## Final Reflection
 Write at least a paragraph about your experience in this course. What did you learn? What do you need to do to learn more? Key takeaways? etc.
+
+From this course CS 5001, I got the opportunity to be exposed in extensive training on the programming language Python. We learnt from the very basics, such as conditionals , arithmetic operators, while loop and for loop, string/list/tuple/set/dictionary, to more advanced part such as error handling and file handling, class/object as well as basics in data structure. It is certainly a lot of knowledge, but most importantly, I learnt the mind set of coding: divide, conquer, glue. I also applied this technique in this final project: thinking about what are the parts that needs to be done, write a list down, then build it one part at a time. Also I learnt good practice in code writing, such as PEP8 style, as well as documenting as much as I can. Besides, we are also exposed to technical-interview style code walks, and were offered online resources that are relevant to tech interviews in our future job hunting. All of those are hyper-useful of course.
+
+If I had more time, I would probably attend more online classes on Python at the same time, as the material covered in class videos are still quite limited, sometimes quite vague too. So I need to check a lot of online resources as I go along. While that was certainly useful, I was hoping to get more systematic training so the knowledge structure would be more solid and long-lasting. Also I get from the course that, in order to progress continuously, I need to take time to practice often to make the knowledge really sunk in. 
+
 
 ## References
 https://www.babycenter.com/pregnancy-due-date-calculator ( the principles of calculating due date)
