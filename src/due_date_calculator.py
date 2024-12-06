@@ -6,28 +6,28 @@ from os.path import exists
 
 class User:
     """
-        This class stores the user's name, the date of their last menstrual period (LMP),
-        and the length of their menstrual cycle. It provides methods to set the LMP date,
-        set the period length, save user data to a CSV file, and load user data from a CSV file.
+    This class stores the user's name, the date of their last menstrual period (LMP),
+    and the length of their menstrual cycle. It provides methods to set the LMP date,
+    set the period length, save user data to a CSV file, and load user data from a CSV file.
 
-        Attributes:
-        name (str): The name of the user.
-        lmp_date (datetime): The date of the user's last menstrual period (LMP), stored as a datetime object.
-        period_length (int): The length of the user's menstrual cycle, default is 28 days.
+    Attributes:
+    name (str): The name of the user.
+    lmp_date (datetime): The date of the user's last menstrual period (LMP), stored as a datetime object.
+    period_length (int): The length of the user's menstrual cycle, default is 28 days.
 
-        Methods:
-        set_lmp_date(lmp_date: datetime) -> None:
-            Sets the LMP date for the user.
+    Methods:
+    set_lmp_date(lmp_date: datetime) -> None:
+        Sets the LMP date for the user.
 
-        set_period_length(period_length: int) -> None:
-            Sets the period length for the user.
+    set_period_length(period_length: int) -> None:
+        Sets the period length for the user.
 
-        save_to_file(file_name: str = "data/user_data.csv") -> None:
-            Saves the user's data to a CSV file. If the file does not exist, it creates it.
+    save_to_file(file_name: str = "data/user_data.csv") -> None:
+        Saves the user's data to a CSV file. If the file does not exist, it creates it.
 
-        load_from_file(user_name: str, file_name: str = "data/user_data.csv") -> Union[User, None]:
-            Loads a user's data from a CSV file based on the provided user name. Returns a User object
-            if found, or None if the user is not found or the file cannot be read.
+    load_from_file(user_name: str, file_name: str = "data/user_data.csv") -> Union[User, None]:
+        Loads a user's data from a CSV file based on the provided user name. Returns a User object
+        if found, or None if the user is not found or the file cannot be read.
     """
     
     def __init__(self, name: str) -> None :
@@ -243,7 +243,7 @@ class DueDatePredictor:
         else:
             print(f"\nWelcome back, {self.user.name}!")  # greeting for returning user
 
-        print(f"You are currently {weeks} weeks and {days} days pregnant.")
+        print(f"Congratulations ! You are currently {weeks} weeks and {days} days pregnant.")
         print(f"Your baby's estimated due date is: {due_date.strftime('%m/%d/%Y')}")
         self.display_options(weeks)
 
@@ -387,7 +387,12 @@ class DueDatePredictor:
 
 
     def display_journal_entries(self) -> None:
-        """Display current journal entries specific to the logged-in user."""
+        """
+        Display current journal entries specific to the logged-in user.
+        
+        Attributes:
+        self.user.name (str): The name of the currently logged-in user, used to filter entries.
+        """
         journal_file = "data/pregnancy_journal.csv"  # define the relative file path
 
         if not exists(journal_file):
