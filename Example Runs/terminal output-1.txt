@@ -1,0 +1,151 @@
+(base) cindywang@Cindys-MacBook-Pro FinalProjectTemplate FINAL COPY % /usr/local/bin/python3 "/Users/cindywang/Documents/NEU-Align MSCS/CS5001/Final Pr
+oject/FinalProjectTemplate FINAL COPY/src/due_date_calculator.py"
+Welcome to BabyLand - A Comprehensive Toolbox for Your Pregnancy Journey!
+Please enter your name: Melissa
+No previous data found. Let's set up your profile.
+Please enter the first day of your last menstrual period (MM/DD/YYYY), or type 'exit' to quit: 01/04/2024
+Invalid date range. Please enter a date between 03/01/2024 and today's date (12/06/2024).
+Please enter the first day of your last menstrual period (MM/DD/YYYY), or type 'exit' to quit: 04/04/2024
+Please enter your normal menstrual cycle length in days (default is 28), or type 'exit' to quit: 30
+
+Welcome, Melissa!
+Congratulations ! You are currently 34 weeks and 6 days pregnant.
+Your baby's estimated due date is: 01/11/2025
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 1
+Week 34: The baby is turning their head downward. Your baby is now about the size of a cataloupe. 
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 3
+
+No journal entries found.
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 4
+
+Write a new entry below (or type 'exit' to cancel):
+> 4
+Entry saved!
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 5
+
+Current journal entries:
+1. 12/06/2024 - 4
+
+Enter the number of the entry you want to modify (or type 'exit' to cancel): 1
+Enter the new text for the entry (or type 'exit' to cancel):
+> I like BabyLand!
+Entry updated!
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 3
+
+Journal entries for Melissa:
+1. 12/06/2024 - I like BabyLand!
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 4
+
+Write a new entry below (or type 'exit' to cancel):
+> I never felt so beautifula and confident! Can't wait to see my baby!
+Entry saved!
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 6
+
+Current journal entries:
+1. 12/06/2024 - I like BabyLand!
+2. 12/06/2024 - I never felt so beautifula and confident! Can't wait to see my baby!
+
+Enter the number of the journal entry you want to delete (or type 'exit' to cancel): 2
+Entry 12/06/2024 has been deleted.
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 4
+
+Write a new entry below (or type 'exit' to cancel):
+> exit
+Entry creation canceled.
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 3
+
+Journal entries for Melissa:
+1. 12/06/2024 - I like BabyLand!
+
+Options:
+1: Display pregnancy milestone info corresponding to the week.
+2: Display weekly medical info corresponding to the week.
+3: Display current journal entries.
+4: Add a new journal entry.
+5: Modify an existing journal entry.
+6: Delete a journal entry.
+7: Exit.
+Please select an option (1-7): 7
+Thank you for using BabyLand! Take care.
+(base) cindywang@Cindys-MacBook-Pro FinalProjectTemplate FINAL COPY % 
